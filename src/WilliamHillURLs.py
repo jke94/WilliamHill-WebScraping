@@ -1,3 +1,12 @@
+'''
+
+    AUTOR: Javier Carracedo
+    Date: 08/10/2020 
+
+    WilliamHillURLs class to managed info about William Hill web pages.
+
+'''
+
 import requests 
 from bs4 import BeautifulSoup
 from urlvalidator import validate_url, ValidationError
@@ -19,6 +28,9 @@ class WilliamHillURLs:
 
     URL_TenisOnDirect : str
         Tenis matches URL in direct on William Hill web page.
+
+    URL_BasketOnDirect : str
+        Basket matches URL in direct on William Hill web page.
 
     """
 
@@ -81,4 +93,3 @@ class WilliamHillURLs:
             matchList.append(var)
 
         return matchList
-        
