@@ -28,6 +28,8 @@ class WilliamHillURLs:
 
     URL_TenisOnDirect = 'https://sports.williamhill.es/betting/es-es/en-directo/tenis'
 
+    URL_BasketOnDirect = 'https://sports.williamhill.es/betting/es-es/en-directo/baloncesto'
+
     
     def GetAllUrlMatches(self, urlSport=URL_FootballOnDirect):
 
@@ -56,3 +58,27 @@ class WilliamHillURLs:
                 raise ValidationError(theUrl)
 
         return auxList
+
+    def GetAllMatchsPlayedActually(self, urlSport=URL_FootballOnDirect):
+        """Get all sport matches played in the actuall moment.
+
+        Args:
+            urlSport (str, optional): A William Hill URL sport. Defaults to URL_FootballOnDirect.
+
+        Returns:
+            list: List with all matches and its bets.
+        """
+        req = requests.get(urlSport)
+        soup = BeautifulSoup(req.text, "lxml")
+
+        matches = soup.findAll("div", {"class": "btmarket__link-name btmarket__link-name--ellipsis show-for-desktop-medium"})
+        listaApuestas = soup.findAll("div", {"class": "btmarket__selection"})
+
+        matchList = []
+        
+        for item in matches:
+            var = item.text + ': ' + listaApuestas[0].text + ' | ' +  listaApuestas[1].text + ' | ' +  listaApuestas[2].text
+            matchList.append(var)
+
+        return matchList
+        
