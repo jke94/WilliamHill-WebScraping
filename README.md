@@ -1,2 +1,2 @@
 # WilliamHill-WebScraping
-A William Hill scraping to get data form William Hill web page.
+A William Hill scraping to get data from William Hill web page.
