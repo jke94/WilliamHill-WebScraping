@@ -1,6 +1,8 @@
 '''
 
     AUTOR: Javier Carracedo
+    Github User: jke94
+    File: SeleniumSpyder.py
     Date: 13/10/2020 
 
     SeleniumSpyder scrpit to get info about each football match in
@@ -26,6 +28,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import logging
 from time import sleep
 from urllib.parse import unquote
 from urlvalidator import validate_url, ValidationError
@@ -33,7 +36,7 @@ import csv
 import FootballMatchEvent
 
 # Path of Chrome Web Driver
-PATH = "../Tools/chromedriver.exe"
+PATH = "../tools/chromedriver.exe"
 
 # William Hill url with matchs footballs on direct.
 URL_BASE = "https://sports.williamhill.es/betting/es-es/en-directo/fútbol"
@@ -47,10 +50,16 @@ NUMBER_OF_WEB_SHOTS = 10
 # Script main
 if __name__ == "__main__":
 
+    now = datetime.now()
+    logFileName = './../logs/sypderLog.log'
+    logging.basicConfig(filename=logFileName, level=logging.INFO)
+    logging.info(str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '|| ' + 'SPYDER START.')
+
+
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--incognito")
-
     driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
+    logging.info(str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '|| ' + 'Created Chrome Web driver instance.')
 
     driver.get(URL_BASE)
 
@@ -91,23 +100,27 @@ if __name__ == "__main__":
             betList = WebDriverWait(driver, 10).until(
                 EC.presence_of_all_elements_located((By.XPATH, "//span[@class='betbutton__odds']"))
             )
+            
+            zipedLists = zip(matches, resultsTeamA, resultsTeamB, timeMatches, localVisitantsTeamsNames, matchTimeList)
 
-            for (item, itemResultTeamA, itemResultTeamB, itemTimeMatches, itemlocalVisitantsTeamsNames, itemMatchTimeList) in zip(matches, resultsTeamA, resultsTeamB, timeMatches, localVisitantsTeamsNames, matchTimeList):
+            logging.info(str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '|| ' + 'Number of matches played on direct: ' + str(len(matches)))
 
-                url = unquote((item.get_attribute("href")))
+            for item in zipedLists:
+
+                url = unquote((item[0].get_attribute("href")))
                 
-                footballMatchsEventsList.append(FootballMatchEvent.FootballMatchEvent(url, item.text,itemResultTeamA.text, itemResultTeamB.text, itemMatchTimeList.text))
+                footballMatchsEventsList.append(FootballMatchEvent.FootballMatchEvent(url, item[0].text, item[1].text, item[2].text, item[5].text))
 
             for item in footballMatchsEventsList:
                 
                 now = datetime.now()
 
-                fields=[    now.strftime(   "%d/%m/%Y %H:%M:%S"), item.MatchTimeInstant, 
-                                            item.LocalTeamName, item.VisitantTeamName, 
-                                            item.LocalTeamGoals, item.VisitantTeamGoals,
-                                            'N/A', 'N/A', 'N/A',
-                        ]
-                
+                fields=[str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")), 
+                        item.MatchTimeInstant, 
+                        item.LocalTeamName, item.VisitantTeamName, 
+                        item.LocalTeamGoals, item.VisitantTeamGoals,
+                        'N/A', 'N/A', 'N/A'] # TODO: Added the bets.
+                                       
                 with open(item.PathDataFileEvent, 'a', newline='\n') as f:
                     writer = csv.writer(f)
                     writer.writerow(fields)
@@ -122,12 +135,15 @@ if __name__ == "__main__":
             footballMatchsEventsList.clear()
 
             count += 1
+            logging.info(str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '|| ' + 'Created new data shot.')
 
             sleep(SLEEP_SECONDS)
 
     except Exception as e:
         print("ERROR", str(e))
+        logging.error("ERROR", str(e))
         driver.quit()
 
     # Closed driver.
     driver.quit()
+    logging.info(str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '|| ' + 'SPYDER FINISHED')
