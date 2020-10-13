@@ -6,8 +6,8 @@ A William Hill scraping to get data from [William Hill football matches on direc
 ### 1. Install the python modules needed for this project.
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
-```bash
-pip install [module_name]
+```cmd
+>pip install [module_name]
 ```
 On this project the moduled needed are:
 - datetime
@@ -33,6 +33,13 @@ Automatically after the script execution for each match founded a CSV file will 
 ```cmd
 .\WilliamHill-WebScraping\data>
 ```
+
+## Logs
+Automatically after run the script, it will generate a file 'sypderLog.log' with logs on this path:
+```cmd
+.\WilliamHill-WebScraping\logs>
+```
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
