@@ -1,116 +1,133 @@
-#_*_coding: utf-8_*_
+'''
 
+    AUTOR: Javier Carracedo
+    Date: 13/10/2020 
+
+    SeleniumSpyder scrpit to get info about each football match in
+        'https://sports.williamhill.es/betting/es-es/en-directo/fútbol" 
+    web page.
+
+    For each football match displayed in the web page, the script create a csv file
+    to store info about:
+
+        -   Time Stamp
+        -   Match Time stamp 
+        -   Local Team name 
+        -   Visitant Team name
+        -   Local Team Goals
+        -   Visitant Team Goals
+
+'''
+
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urlvalidator import validate_url, ValidationError
-from datetime import datetime
 from time import sleep
 from urllib.parse import unquote
+from urlvalidator import validate_url, ValidationError
 import csv
 import FootballMatchEvent
- 
+
+# Path of Chrome Web Driver
 PATH = "../Tools/chromedriver.exe"
+
+# William Hill url with matchs footballs on direct.
 URL_BASE = "https://sports.williamhill.es/betting/es-es/en-directo/fútbol"
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--incognito")
+# Number of seconds that program is paused until again execution (Variable that can be modified by the user)
+SLEEP_SECONDS = 1
 
-driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
+# Number of web shots are captured by match and printed in csv file with the information (Variable that can be modified by the user).
+NUMBER_OF_WEB_SHOTS = 10
 
-driver.get(URL_BASE)
+# Script main
+if __name__ == "__main__":
 
-try:
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--incognito")
 
-    count = 0
+    driver = webdriver.Chrome(executable_path=PATH, options=chrome_options)
 
-    while (count < 5):
+    driver.get(URL_BASE)
 
-        footballMatchsEventsList = []
+    try:
 
-        # Get from URL_BASE time, actual result, match name and url match.
+        count = 0
 
-        # matches = driver.find_elements_by_xpath("//a[@class='btmarket__name btmarket__name--featured']")
+        while (count < NUMBER_OF_WEB_SHOTS):
 
-        matches = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//a[@class='btmarket__name btmarket__name--featured']"))
-        )
+            footballMatchsEventsList = []
 
-        # resultsTeamA = driver.find_elements_by_xpath("//span[@class='btmarket__livescore-item team-a']")
+            # Get from URL_BASE time, actual result, match name and url match.
 
-        resultsTeamA = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//span[@class='btmarket__livescore-item team-a']"))
-        )
+            matches = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//a[@class='btmarket__name btmarket__name--featured']"))
+            )
 
-        # resultsTeamB = driver.find_elements_by_xpath("//span[@class='btmarket__livescore-item team-b']")
+            resultsTeamA = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//span[@class='btmarket__livescore-item team-a']"))
+            )
 
-        resultsTeamB = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//span[@class='btmarket__livescore-item team-b']"))
-        )
+            resultsTeamB = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//span[@class='btmarket__livescore-item team-b']"))
+            )
 
-        # timeMatches =  driver.find_elements_by_xpath("//label[@class='wh-label btmarket__live go area-livescore event__status']")
-
-        timeMatches = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//label[@class='wh-label btmarket__live go area-livescore event__status']"))
-        )
-        
-        # localVisitantsTeamsNames = driver.find_elements_by_xpath("//div[@class='btmarket__link-name btmarket__link-name--ellipsis show-for-desktop-medium']")
-
-        localVisitantsTeamsNames = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//div[@class='btmarket__link-name btmarket__link-name--ellipsis show-for-desktop-medium']"))
-        )
-
-        # matchTimeList = driver.find_elements_by_xpath("//label[@class='wh-label btmarket__live go area-livescore event__status']")
-
-        matchTimeList = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//label[@class='wh-label btmarket__live go area-livescore event__status']"))
-        )
-
-        # betList = driver.find_elements_by_xpath("//span[@class='betbutton__odds']") # len = Number of matches * 3
-
-        betList = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//span[@class='betbutton__odds']"))
-        )
-
-        for (item, itemResultTeamA, itemResultTeamB, itemTimeMatches, itemlocalVisitantsTeamsNames, itemMatchTimeList) in zip(matches, resultsTeamA, resultsTeamB, timeMatches, localVisitantsTeamsNames, matchTimeList):
-
-            url = unquote((item.get_attribute("href")))
+            timeMatches = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//label[@class='wh-label btmarket__live go area-livescore event__status']"))
+            )
             
-            footballMatchsEventsList.append(FootballMatchEvent.FootballMatchEvent(url, item.text,itemResultTeamA.text, itemResultTeamB.text, itemMatchTimeList.text))
+            localVisitantsTeamsNames = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//div[@class='btmarket__link-name btmarket__link-name--ellipsis show-for-desktop-medium']"))
+            )
 
-        for item in footballMatchsEventsList:
-            
-            now = datetime.now()
+            matchTimeList = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//label[@class='wh-label btmarket__live go area-livescore event__status']"))
+            )
 
-            fields=[now.strftime(   "%d/%m/%Y %H:%M:%S"), item.MatchTimeInstant, 
-                                    item.LocalTeamName, item.VisitantTeamName, 
-                                    item.LocalTeamGoals, item.VisitantTeamGoals]
-            
-            with open(item.PathDataFileEvent, 'a', newline='\n') as f:
-                writer = csv.writer(f)
-                writer.writerow(fields)
-                f.close()
+            betList = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//span[@class='betbutton__odds']"))
+            )
 
-        matches.clear()
-        resultsTeamA.clear()
-        resultsTeamB.clear()
-        timeMatches.clear()
-        localVisitantsTeamsNames.clear()
-        matchTimeList.clear()
-        footballMatchsEventsList.clear()
+            for (item, itemResultTeamA, itemResultTeamB, itemTimeMatches, itemlocalVisitantsTeamsNames, itemMatchTimeList) in zip(matches, resultsTeamA, resultsTeamB, timeMatches, localVisitantsTeamsNames, matchTimeList):
 
-        count += 1
+                url = unquote((item.get_attribute("href")))
+                
+                footballMatchsEventsList.append(FootballMatchEvent.FootballMatchEvent(url, item.text,itemResultTeamA.text, itemResultTeamB.text, itemMatchTimeList.text))
 
-        sleep(1) # Sleep 5 seconds
+            for item in footballMatchsEventsList:
+                
+                now = datetime.now()
 
-except Exception as e:
-    print("ERROR", str(e))
+                fields=[    now.strftime(   "%d/%m/%Y %H:%M:%S"), item.MatchTimeInstant, 
+                                            item.LocalTeamName, item.VisitantTeamName, 
+                                            item.LocalTeamGoals, item.VisitantTeamGoals,
+                                            'N/A', 'N/A', 'N/A',
+                        ]
+                
+                with open(item.PathDataFileEvent, 'a', newline='\n') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(fields)
+                    f.close()
+
+            matches.clear()
+            resultsTeamA.clear()
+            resultsTeamB.clear()
+            timeMatches.clear()
+            localVisitantsTeamsNames.clear()
+            matchTimeList.clear()
+            footballMatchsEventsList.clear()
+
+            count += 1
+
+            sleep(SLEEP_SECONDS)
+
+    except Exception as e:
+        print("ERROR", str(e))
+        driver.quit()
+
+    # Closed driver.
     driver.quit()
-
-
-
-# Close.
-driver.quit()
