@@ -18,6 +18,8 @@ On this project the moduled needed are:
 - urlvalidator
 - csv
 - FootballMatchEvent (from .\WilliamHill-WebScraping\src)
+- coverage
+- unittesting
 
 ### 2. Download chromedriver.exe, needed for this project.
 IMPORTANT: It will be needed to have a [chromedriver.exe](https://chromedriver.chromium.org/downloads) on this path: '.\WilliamHill-WebScraping\tools'

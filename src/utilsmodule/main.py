@@ -6,12 +6,11 @@
     Auxiliar class to test methods from WilliamHillURLs.py
 
 '''
-
-import WilliamHillURLs as whUrls
+import WilliamHillURLs
 
 if __name__ == "__main__":
 
-    myVariable = whUrls.WilliamHillURLs()
+    myVariable = WilliamHillURLs.WilliamHillURLs()
 
     # Print all matches played actually.
     for item in myVariable.GetAllMatchsPlayedActually(myVariable.URL_FootballOnDirect):
@@ -43,8 +42,8 @@ if __name__ == "__main__":
     for item in myVariable.GetAllUrlMatches(myVariable.URL_FootballOnDirect):
         print(item)
 
-    '''
-        OUTPUT EXAMPLE at 08/10/2020 20:19:29:
+    '''OUTPUT EXAMPLE at 08/10/2020 20:19:29:
+        
 
         https://sports.williamhill.es/betting/es-es/fÃºtbol/OB_EV18701125/islas-feroe-sub-21-â-espaÃ±a-sub-21
         https://sports.williamhill.es/betting/es-es/fÃºtbol/OB_EV18701988/dornbirn-â-st-gallen
