@@ -55,7 +55,7 @@ class WilliamHillURLs:
         """
 
         req = requests.get(urlSport)
-        soup = BeautifulSoup(req.text, "html.parser")
+        soup = BeautifulSoup(req.content.decode('utf-8','ignore'), "html.parser")
 
         aux = soup.findAll("a", {"class": ['btmarket__name btmarket__name--featured']})
         
@@ -81,7 +81,7 @@ class WilliamHillURLs:
             list: List with all matches and its bets.
         """
         req = requests.get(urlSport)
-        soup = BeautifulSoup(req.text, "lxml")
+        soup = BeautifulSoup(req.content.decode('utf-8','ignore'), "lxml")
 
         matches = soup.findAll("div", {"class": "btmarket__link-name btmarket__link-name--ellipsis show-for-desktop-medium"})
         listaApuestas = soup.findAll("div", {"class": "btmarket__selection"})
@@ -93,3 +93,42 @@ class WilliamHillURLs:
             matchList.append(var)
 
         return matchList
+
+    def ConvertFractionalBetToDecimalBet(self, theBet):
+        """Convert a fraccioanl bet str to 
+
+        Args:
+            theBet (str): A fractional bet.
+
+        Returns:
+            [str]: A decimal bet.
+        """
+        bet = 0.0
+        aux = str(theBet).split('/')
+        bet = (int(aux[0], 10) / int(aux[1], 10) ) + 1
+        
+        return str(round(bet, 2))
+
+    def GetAllBetsFromURLMatch(self, url):
+        """Get all bets actually from a match. 
+
+        Args:
+            url (str): Match URL
+
+        Returns:
+            [type]: A list with the diferents bets availables.
+        """
+        allBetsList = []
+
+        req = requests.get(url)
+        soup = BeautifulSoup(req.content.decode('utf-8','ignore'), "html.parser")
+
+        aux = soup.findAll("h2", {"class" : ['fl']})
+
+        # print('Number of diferent bets: ', len(aux), ', Match URL: ', url)
+
+        for item in aux:
+            allBetsList.append(item.text)
+            # print(item.text,'|',type(item.text), item['class'])
+
+        return allBetsList

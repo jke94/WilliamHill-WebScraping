@@ -33,7 +33,7 @@ from time import sleep
 from urllib.parse import unquote
 from urlvalidator import validate_url, ValidationError
 import csv
-import FootballMatchEvent
+from spydermoduler.FootballMatchEvent import FootballMatchEvent
 
 # Path of Chrome Web Driver
 PATH = "../tools/chromedriver.exe"
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
                 url = unquote((item[0].get_attribute("href")))
                 
-                footballMatchsEventsList.append(FootballMatchEvent.FootballMatchEvent(url, item[0].text, item[1].text, item[2].text, item[5].text))
+                footballMatchsEventsList.append(FootballMatchEvent(url, item[0].text, item[1].text, item[2].text, item[5].text))
 
             for item in footballMatchsEventsList:
                 

@@ -1,0 +1,14 @@
+IMPORTANT: Run this commands from '.\William-HillWebScrapping\'
+
+1 - Discover and run all tests in the test directory.
+
+>python -m unittest discover -v
+
+2 - Run coverage for all modules.
+>coverage run --source=./src -m unittest discover -source . -v 
+
+3 - Report coverage.
+>coverage report -m
+
+4 - (EXTRA Information) Report coverage in html view.
+>coverage html --directory=./tests/InfoCoverageReport/ 
