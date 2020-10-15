@@ -1,5 +1,5 @@
 import unittest
-from src.spydermoduler.FootballMatchEvent import FootballMatchEvent
+from src.spydermodule.FootballMatchEvent import FootballMatchEvent
 
 class TestFootballMatchEvent(unittest.TestCase):
 
